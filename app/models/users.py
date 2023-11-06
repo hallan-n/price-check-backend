@@ -9,9 +9,11 @@ class User(BaseModel):
     user_name = Column(String(100))
     email = Column(String(255))
     password = Column(String(60))
-    #                  classe de relação
-    logins = relationship('Login', back_populates='usuario')
-
+    logins = relationship("Login", back_populates="user")
 
     def __str__(self):
-        return f"Id: {self.id}, Nome: {self.nome}, Idade: {self.email}, Password: {self.password}"
+        return f"""
+        Id: {self.id}, 
+        Nome: {self.nome}, 
+        Idade: {self.email}, 
+        Password: {self.password}"""
