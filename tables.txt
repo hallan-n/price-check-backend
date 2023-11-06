@@ -1,0 +1,32 @@
+users
+    id
+    name
+    email
+    password
+
+logins
+    username
+    password
+    store
+
+products
+    product_id
+    product_name
+    description
+    category
+    brand
+    model
+    price
+    product_url
+    store
+    update_date
+    average_rating
+    availability
+
+store
+    store_id
+    store_name
+    store_url
+    store_description
+    store_rating
+    store_contact
