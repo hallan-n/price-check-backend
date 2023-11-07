@@ -1,0 +1,1 @@
+O **Price Check** é uma plataforma online que ajuda os consumidores a comparar preços de produtos, oferecendo uma maneira conveniente de encontrar as melhores ofertas disponíveis em diversos varejistas.
