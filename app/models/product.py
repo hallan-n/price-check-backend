@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
+from pydantic import BaseModel as BM
 
 
 class ProductSQL(BaseModel):
@@ -23,3 +24,17 @@ class ProductSQL(BaseModel):
 
     def __str__(self):
         return f"Id: {self.product_id}, \nNome: {self.product_name}, \nDescrição: {self.description}, \nCategoria: {self.category}, \nMarca: {self.brand}, \nModelo: {self.model}, \nPreço: {self.price}, \nurl: {self.product_url}, \nLoja: {self.store}, \nData de atualização: {self.update_date}, \nAvaliação: {self.average_rating}, \nDisponibilidade: {self.availability}"
+
+
+class Product(BM):
+    product_id: int
+    product_name: str
+    description: str
+    category: str
+    brand: str
+    model: str
+    price: str
+    product_url: str
+    update_date: str
+    average_rating: str
+    availability: str

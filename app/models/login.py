@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
+from pydantic import BaseModel as BM
 
 
 class LoginSQL(BaseModel):
@@ -13,6 +14,10 @@ class LoginSQL(BaseModel):
     user = relationship("UserSQL", back_populates="logins")
 
     def __str__(self):
-        return (
-            f"Id: {self.login_id}, \nUsuário: {self.username}, \nSenha: {self.password}"
-        )
+        return f"Id: {self.login_id}, \nUsuário: {self.username}, \nSenha: {self.password}"
+
+
+class Login(BM):
+    login_id: int
+    username: str
+    password: str
