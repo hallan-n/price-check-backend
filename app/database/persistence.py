@@ -1,6 +1,6 @@
 from app.database.connection import get_session
 from app.models.base_model import BaseModel, Base
-
+from pydantic import BaseModel as BM
 from app.models.store import StoreSQL
 from app.models.login import LoginSQL
 from app.models.product import ProductSQL
@@ -19,6 +19,16 @@ def create_tables():
     Base.metadata.create_all(session.bind)
 
 
+
+
+def create(value: BM):
+    u1 = UserSQL(user_name=value.user_name,email=value.email,password=value.password)
+    session.add(u1)
+    session.commit()
+    session.close()
+
+
+
 def _create_db_mysql():
     load_dotenv()
     conn = {
@@ -30,20 +40,6 @@ def _create_db_mysql():
     try:
         mydb = mysql.connector.connect(**conn)
         mycursor = mydb.cursor()
-        mycursor.execute(f"CREATE DATABASE {os.getenv('DB_DATABASE')};")
-        print("O banco foi criado")
+        mycursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('DB_DATABASE')};")
     except DatabaseError as e:
         print(">>>>>>", e.msg)
-
-
-# def create(value: BaseModel):
-#     session.add(value)
-#     session.commit()
-#     session.close()
-
-
-# def delete(idx):
-#     user = session.query(User).filter(User.id == idx).first()
-#     session.delete(user)
-#     session.commit()
-#     session.close()

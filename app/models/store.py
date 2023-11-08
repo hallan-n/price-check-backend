@@ -26,4 +26,4 @@ class Store(BM):
     store_description: str
     store_rating: str
     store_contact: str
-    products: str
+    products: list
