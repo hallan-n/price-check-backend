@@ -35,9 +35,9 @@ class UserSQL(BaseModel):
 
 class User(BM):
     user_id: int = None
-    user_name: str = None
-    email: str = None
-    password: str = None
+    user_name: str
+    email: str
+    password: str
     logins: str = None
 
     @validator("user_name")

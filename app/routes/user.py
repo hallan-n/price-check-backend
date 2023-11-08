@@ -7,4 +7,4 @@ router = APIRouter(prefix="/user")
 
 @router.post("/register")
 async def user_register(user: User):
-    create(user)
+    return create(user)

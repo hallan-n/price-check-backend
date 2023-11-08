@@ -20,12 +20,12 @@ def create_tables():
 
 
 
-
 def create(value: BM):
     u1 = UserSQL(user_name=value.user_name,email=value.email,password=value.password)
     session.add(u1)
     session.commit()
     session.close()
+    return "criado"
 
 
 
