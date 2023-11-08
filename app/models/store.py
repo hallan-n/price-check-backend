@@ -1,20 +1,18 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
-from app.models.product import ProductSQL
 from pydantic import BaseModel as BM
-from typing import List
 
 
 class StoreSQL(BaseModel):
     __tablename__ = "stores"
     store_id = Column(Integer, primary_key=True, autoincrement=True)
-    store_name = Column(String)
-    store_url = Column(String)
-    store_description = Column(String)
-    store_rating = Column(String)
+    store_name = Column(String(40))
+    store_url = Column(String(40))
+    store_description = Column(String(40))
+    store_rating = Column(String(40))
 
-    store_contact = Column(String)
+    store_contact = Column(String(40))
     products = relationship("ProductSQL", back_populates="store")
 
     def __str__(self):
@@ -28,4 +26,4 @@ class Store(BM):
     store_description: str
     store_rating: str
     store_contact: str
-    products: List[ProductSQL]
+    products: str
