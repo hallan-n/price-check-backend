@@ -32,7 +32,6 @@ class UserSQL(BaseModel):
     #     return value
 
 
-
 class User(BM):
     user_id: int = None
     user_name: str

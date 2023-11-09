@@ -23,3 +23,4 @@ class Login(BM):
     login_id: int
     username: str
     password: str
+    user_id: int

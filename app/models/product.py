@@ -38,3 +38,4 @@ class Product(BM):
     update_date: str
     average_rating: str
     availability: str
+    store_id: int
