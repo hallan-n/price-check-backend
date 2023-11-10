@@ -2,9 +2,9 @@ from fastapi import APIRouter
 from app.models.store import Store
 from app.database.persistence import create
 
-router = APIRouter(prefix="/store")
+router = APIRouter()
 
 
-@router.post("/register")
+@router.post("/store")
 async def user_register(user: Store):
     return create(user)

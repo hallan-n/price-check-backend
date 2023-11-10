@@ -2,9 +2,10 @@ from fastapi import APIRouter
 from app.models.user import User
 from app.database.persistence import create
 
-router = APIRouter(prefix="/user")
+router = APIRouter()
 
 
-@router.post("/register")
+@router.post("/user")
 async def user_register(user: User):
-    return create(user, "user")
+    resp = create(user, "user")
+    return resp

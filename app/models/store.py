@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
-from app.models.product import Product
 from pydantic import BaseModel as BM
 
 
@@ -15,14 +14,13 @@ class StoreSQL(BaseModel):
     store_contact = Column(String(40))
     login_id = Column(Integer, ForeignKey("logins.login_id"))
     products = relationship("ProductSQL", back_populates="store")
-    login = relationship("Login", back_populates="store")
+    login = relationship("LoginSQL", back_populates="store")
 
 
 class Store(BM):
-    store_id: int
+    store_id: int = None
     store_name: str
     store_url: str
     store_description: str
     store_rating: str
     store_contact: str
-    products: list[Product]

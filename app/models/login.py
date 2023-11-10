@@ -1,6 +1,8 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
+
+# from app.models.base_model import BaseModel
 from pydantic import BaseModel as BM
 
 
@@ -11,11 +13,11 @@ class LoginSQL(BaseModel):
     password = Column(String(255))
     user_id = Column(Integer, ForeignKey("users.user_id"))
     user = relationship("UserSQL", back_populates="logins")
-    store = relationship("Store", back_populates="login", uselist=False)
+    store = relationship("StoreSQL", back_populates="login", uselist=False)
 
 
 class Login(BM):
     login_id: int = None
     username: str
     password: str
-    user_id: int
+    user_id: int = None

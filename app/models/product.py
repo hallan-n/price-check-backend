@@ -23,7 +23,7 @@ class ProductSQL(BaseModel):
 
 
 class Product(BM):
-    product_id: int
+    product_id: int = None
     product_name: str
     description: str
     category: str
@@ -34,4 +34,4 @@ class Product(BM):
     update_date: str
     average_rating: str
     availability: str
-    store_id: int
+    store_id: int = None
