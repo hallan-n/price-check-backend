@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from app.models.user import User
 from app.database.persistence import create, delete, read, update
 

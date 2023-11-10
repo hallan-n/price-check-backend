@@ -5,7 +5,6 @@ from app.models.store import StoreSQL
 from app.models.login import LoginSQL
 from app.models.product import ProductSQL
 from app.models.user import UserSQL
-
 import mysql.connector
 from mysql.connector.errors import DatabaseError
 from dotenv import load_dotenv
