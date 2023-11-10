@@ -24,7 +24,36 @@ def create(value: BM, schema: str):
     session.add(sql_class)
     session.commit()
     session.close()
-    return {"criado": True}
+    return {"message": "User created successfully"}
+
+
+# Método para atualizar um usuário por ID
+def update(id: int, data: BM):
+    session.query(BM).filter(UserSQL.user_id == id).update(data)
+    session.commit()
+    return {"message": "User updated successfully"}
+
+
+def delete(id: int, schema: str):
+    ClassSQL = _verify_schema(schema)
+    session.query(ClassSQL[0]).filter(ClassSQL[1] == id).delete()
+    session.commit()
+    return {"message": "User deleted successfully"}
+
+
+def read(id: int, schema: str):
+    return session.query(UserSQL).filter(UserSQL.user_id == id).first()
+
+
+def _verify_schema(schema: str):
+    if schema == "user":
+        return (UserSQL, UserSQL.user_id)
+    if schema == "store":
+        return (StoreSQL, StoreSQL.store_id)
+    if schema == "product":
+        return (ProductSQL, ProductSQL.product_id)
+    if schema == "login":
+        return (LoginSQL, LoginSQL.login_id)
 
 
 def _to_sqlalchemy(value: BM, schema: str):
@@ -43,28 +72,14 @@ def _to_sqlalchemy(value: BM, schema: str):
         return login
 
 
-# def read():
-#     pass
-
-
-# def update():
-#     pass
-
-
-# def delete():
-#     pass
-
-
 def _create_db_mysql():
     load_dotenv()
-    conn = {
-        "host": os.getenv("DB_HOST"),
-        "user": os.getenv("DB_USER"),
-        "password": os.getenv("DB_PASSWORD"),
-    }
-
     try:
-        mydb = mysql.connector.connect(**conn)
+        mydb = mysql.connector.connect(
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+        )
         mycursor = mydb.cursor()
         mycursor.execute(f"CREATE DATABASE IF NOT EXISTS {os.getenv('DB_DATABASE')};")
     except DatabaseError as e:
