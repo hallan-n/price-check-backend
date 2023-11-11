@@ -20,15 +20,15 @@ class User(BM):
     email: str
     password: str
 
-    @validator("user_name")
-    def validate_username(cls, value):
-        if len(value) > 255:
-            raise ValueError("Nome deve ter no máximo 255 caracteres")
-        return value
+    # @validator("user_name")
+    # def validate_username(cls, value):
+    #     if len(value) > 255:
+    #         raise ValueError("Nome deve ter no máximo 255 caracteres")
+    #     return value
 
     @validator("email")
     def validate_email(cls, value):
-        if not re.match("^[a-z0-9@]{1,255}$", value):
+        if not re.match("^[a-z0-9@\.]{1,255}$", value):
             raise ValueError("Email no formato invalido")
         return value
 

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from app.models.user import User
-from app.database.persistence import create, delete, read, update
+from app.database.persistence import create, delete, read, update, read_all
 
 router = APIRouter()
 
@@ -9,6 +9,13 @@ router = APIRouter()
 async def get_user(id: int):
     """Pega um usuário com base no ID"""
     resp = read(id, "user")
+    return resp
+
+
+@router.get("/user")
+async def get_all_user():
+    """Pega um usuário com base no ID"""
+    resp = read_all("user")
     return resp
 
 
@@ -29,5 +36,5 @@ async def delete_user(id: int):
 @router.put("/user")
 async def update_user(user: User):
     """Update um usuário com base no ID"""
-    update(user, "user")
-    return "Ok"
+    resp = update(user, "user")
+    return resp

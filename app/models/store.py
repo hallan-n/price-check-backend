@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
-from pydantic import BaseModel as BM
+from pydantic import BaseModel as BM, validator
 
 
 class StoreSQL(BaseModel):
@@ -24,3 +24,29 @@ class Store(BM):
     store_description: str
     store_rating: str
     store_contact: str
+    login_id: int
+
+    # @validator("store_name")
+    # def validate_store_name(cls, value):
+    #     if len(value) > 255:
+    #         raise ValueError("Name deve ter no máximo 255 caracteres")
+
+    # @validator("store_url")
+    # def validate_store_url(cls, value):
+    #     if len(value) > 255:
+    #         raise ValueError("URL deve ter no máximo 255 caracteres")
+
+    # @validator("store_description")
+    # def validate_store_description(cls, value):
+    #     if len(value) > 255:
+    #         raise ValueError("Descrição deve ter no máximo 255 caracteres")
+
+    # @validator("store_rating")
+    # def validate_store_rating(cls, value):
+    #     if len(value) > 40:
+    #         raise ValueError("Avaliação deve ter no máximo 255 caracteres")
+
+    # @validator("store_contact")
+    # def validate_store_contact(cls, value):
+    #     if len(value) > 40:
+    #         raise ValueError("Contato deve ter no máximo 255 caracteres")

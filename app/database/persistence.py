@@ -19,11 +19,17 @@ def create_tables():
 
 
 def create(value: BM, schema: str):
-    sql_class = _to_sqlalchemy(value, schema)
-    session.add(sql_class)
-    session.commit()
-    session.close()
-    return {"message": "User created successfully"}
+    try:
+        sql_class = _to_sqlalchemy(value, schema)
+        session.add(sql_class)
+        session.commit()
+    except Exception as e:
+        print(f"Erro ao tentar inserir {e}")
+        session.rollback()
+    finally:
+        session.close()
+
+    return {"message": "Created successfully"}
 
 
 def update(value: BM, schema: str):
@@ -32,21 +38,28 @@ def update(value: BM, schema: str):
     id = _get_id(value)
     session.query(ClassSQL[0]).filter(ClassSQL[1] == id).update(data)
     session.commit()
-    return {"message": "User updated successfully"}
+    return {"message": "Updated successfully"}
 
 
 def delete(id: int, schema: str):
     ClassSQL = _verify_schema(schema)
     session.query(ClassSQL[0]).filter(ClassSQL[1] == id).delete()
     session.commit()
-    return {"message": "User deleted successfully"}
+    return {"message": "Deleted successfully"}
 
 
 def read(id: int, schema: str):
     ClassSQL = _verify_schema(schema)
     data = session.query(ClassSQL[0]).filter(ClassSQL[1] == id).first()
-    data_dict = _to_dict(data)
-    return data_dict
+    if not data:
+        return {"message": "Not found"}
+    return data
+
+
+def read_all(schema: str):
+    ClassSQL = _verify_schema(schema)
+    data = session.query(ClassSQL[0]).all()
+    return data
 
 
 def _to_sqlalchemy(value: BM, schema: str):
@@ -60,13 +73,6 @@ def _get_id(value: [BM | BaseModel]):
         for att in value.__annotations__:
             if att.endswith("id"):
                 return getattr(value, att)
-
-
-def _to_dict(value: BaseModel):
-    result = {}
-    for column in value.__table__.columns:
-        result[column.name] = getattr(value, column.name)
-    return result
 
 
 def _verify_schema(schema: str):
