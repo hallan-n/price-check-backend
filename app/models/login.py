@@ -14,10 +14,11 @@ class LoginSQL(BaseModel):
     user_id = Column(Integer, ForeignKey("users.user_id"))
     user = relationship("UserSQL", back_populates="logins")
     store = relationship("StoreSQL", back_populates="login", uselist=False)
-
+    store_id = Column(Integer, ForeignKey("stores.store_id"))
 
 class Login(BM):
     login_id: int = None
     username: str
     password: str
     user_id: int = None
+    store_id: int = None
