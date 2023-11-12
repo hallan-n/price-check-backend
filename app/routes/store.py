@@ -14,7 +14,7 @@ async def get_store(id: int):
 
 @router.get("/store")
 async def get_all_store():
-    """Pega uma loja com base no ID"""
+    """Pega todas as lojas"""
     resp = read_all("store")
     return resp
 

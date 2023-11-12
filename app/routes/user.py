@@ -14,7 +14,7 @@ async def get_user(id: int):
 
 @router.get("/user")
 async def get_all_user():
-    """Pega um usuário com base no ID"""
+    """Pega todos os usuários"""
     resp = read_all("user")
     return resp
 

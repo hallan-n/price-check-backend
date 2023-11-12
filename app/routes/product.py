@@ -14,7 +14,7 @@ async def get_product(id: int):
 
 @router.get("/product")
 async def get_all_product():
-    """Pega um produto com base no ID"""
+    """Pega todos os produtos"""
     resp = read_all("product")
     return resp
 
