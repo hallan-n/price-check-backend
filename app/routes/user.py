@@ -1,6 +1,12 @@
-from fastapi import APIRouter
-from app.models.user import User
-from app.database.persistence import create, delete, read, update, read_all
+from app.auth.auth import create_access_token, decode_token
+from fastapi import HTTPException, Depends
+
+
+
+from fastapi import APIRouter, HTTPException
+from datetime import timedelta
+from app.models.user import User, SimpleUser
+from app.database.persistence import create, delete, read, update, read_all, verify_user
 
 router = APIRouter()
 
@@ -34,7 +40,22 @@ async def delete_user(id: int):
 
 
 @router.put("/user")
-async def update_user(user: User):
+async def update_user(user: User, token: dict = Depends(decode_token)):
     """Update um usuário com base no ID"""
     resp = update(user, "user")
     return resp
+
+
+@router.post("/token")
+async def get_auth(user: SimpleUser):
+    """Pega o JWT com base no login"""
+    user_auth = verify_user(user)
+    print(user_auth)
+    if not user_auth:
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid user",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    access_token = create_access_token(data={"sub": user_auth.email})
+    return {"access_token": access_token, "token_type": "bearer"}

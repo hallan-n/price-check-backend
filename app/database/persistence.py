@@ -4,11 +4,12 @@ from pydantic import BaseModel as BM
 from app.models.store import StoreSQL
 from app.models.login import LoginSQL
 from app.models.product import ProductSQL
-from app.models.user import UserSQL
+from app.models.user import UserSQL, SimpleUser
 import mysql.connector
 from mysql.connector.errors import DatabaseError
 from dotenv import load_dotenv
 import os
+from app.auth.auth import data_hash, verify_hash
 
 session = get_session()
 
@@ -17,6 +18,11 @@ def create_tables():
     _create_db_mysql()
     Base.metadata.create_all(session.bind)
 
+def verify_user(value: SimpleUser):
+    user = session.query(UserSQL).filter(UserSQL.email == value.email).first()
+    if user and verify_hash(value.password, user.password):
+        return user
+    return None
 
 def create(value: BM, schema: str):
     try:
@@ -28,7 +34,6 @@ def create(value: BM, schema: str):
         session.rollback()
     finally:
         session.close()
-
     return {"message": "Created successfully"}
 
 
@@ -63,6 +68,8 @@ def read_all(schema: str):
 
 
 def _to_sqlalchemy(value: BM, schema: str):
+    if schema == "user":
+        value.password = data_hash(value.password)
     sql_data = dict(value)
     ClassSQL = _verify_schema(schema)[0]
     return ClassSQL(**sql_data)

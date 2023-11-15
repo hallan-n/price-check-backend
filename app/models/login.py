@@ -1,8 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
 from app.models.base_model import BaseModel
-
-# from app.models.base_model import BaseModel
 from pydantic import BaseModel as BM
 
 

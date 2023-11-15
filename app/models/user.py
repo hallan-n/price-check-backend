@@ -20,6 +20,10 @@ class User(BM):
     email: str
     password: str
 
+class SimpleUser(BM):
+    email: str
+    password: str
+
     # @validator("user_name")
     # def validate_username(cls, value):
     #     if len(value) > 255:
