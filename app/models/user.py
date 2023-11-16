@@ -20,6 +20,7 @@ class User(BM):
     email: str
     password: str
 
+
 class SimpleUser(BM):
     email: str
     password: str

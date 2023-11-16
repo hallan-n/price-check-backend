@@ -26,20 +26,19 @@ def verify_user(value: SimpleUser):
         return user
     return None
 
+
 def read_user_for_email(email: str):
     data = session.query(UserSQL).filter(UserSQL.email == email).first()
     if not data:
         return False
     return data
 
-def create(value: BM, data_tuple: tuple): 
-    if read_user_for_email(value.email):
-        raise HTTPException(
-            status_code=409,
-            detail="Email já cadastrado"
-        )
+
+def create(value: BM, data_tuple: tuple):
     try:
         if data_tuple[0] == UserSQL:
+            if read_user_for_email(value.email):
+                return "Email já cadastrado"
             value.password = data_hash(value.password)
         data = dict(value)
         sql_class = data_tuple[0](**data)
@@ -48,10 +47,7 @@ def create(value: BM, data_tuple: tuple):
         return True
     except:
         session.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail="Usuário invalido"
-        )
+        raise HTTPException(status_code=409, detail="Usuário invalido")
     finally:
         session.close()
 
@@ -61,8 +57,6 @@ def read(data_tuple: tuple, id: int):
     if not data:
         return {"message": "Not found"}
     return data
-
-
 
 
 def update(value: BM, data_tuple: tuple, token: str = None):
@@ -80,7 +74,6 @@ def update(value: BM, data_tuple: tuple, token: str = None):
         return {"message": "Updated successfully"}
     except:
         return {"message": "Deu ruim"}
-
 
 
 # def delete(id: int, schema: str):

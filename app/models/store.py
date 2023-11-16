@@ -11,7 +11,6 @@ class StoreSQL(BaseModel):
     store_url = Column(String(255))
     store_description = Column(String(255))
     store_rating = Column(String(40))
-    store_contact = Column(String(40))
     products = relationship("ProductSQL", back_populates="store")
     login = relationship("LoginSQL", back_populates="store")
 
@@ -22,7 +21,6 @@ class Store(BM):
     store_url: str
     store_description: str
     store_rating: str
-    store_contact: str
 
     # @validator("store_name")
     # def validate_store_name(cls, value):

@@ -14,6 +14,7 @@ class LoginSQL(BaseModel):
     store = relationship("StoreSQL", back_populates="login", uselist=False)
     store_id = Column(Integer, ForeignKey("stores.store_id"))
 
+
 class Login(BM):
     login_id: int = None
     username: str

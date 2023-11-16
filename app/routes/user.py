@@ -30,7 +30,5 @@ async def create_user(user: User):
 @router.put("/user")
 async def update_user(user: User, token: dict = Depends(decode_token)):
     """Atualiza um usuário"""
-    resp = update(value=user, data_tuple=tuple_user,token=token["sub"])
+    resp = update(value=user, data_tuple=tuple_user, token=token["sub"])
     return resp
-
-

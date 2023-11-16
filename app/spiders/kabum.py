@@ -1,39 +1,48 @@
 import scrapy
 from scrapy.http.response.html import HtmlResponse
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+from app.models.store import Store, StoreSQL
+from app.database.persistence import create
 
 
-class AosFatosSpider(scrapy.Spider):
-    name = "aosfatos"
-    start_urls = ["https://aosfatos.org/"]
+def called_only_once(func):
+    def wrapper(*args, **kwargs):
+        if not wrapper.called:
+            wrapper.called = True
+            return func(*args, **kwargs)
+        else:
+            return False
 
+    wrapper.called = False
+    return wrapper
+
+
+class KabumSpider(scrapy.Spider):
+    name = "kabum"
+    start_urls = ["https://br.trustpilot.com/review/www.kabum.com.br"]
+
+    @called_only_once
     def parse(self, response: HtmlResponse):
-        links = response.xpath("//nav//ul/li/div/div/ul/li/a/@href").getall()
-        for link in links:
-            yield scrapy.Request(response.urljoin(link), callback=self.parse_category)
+        kabum_store = {
+            "store_name": response.xpath("//*[@class='typography_display-s__qOjh6 typography_appearance-default__AAY17 title_displayName__TtDDM']/text()").get(),
+            "store_url": response.xpath("//span[@class='styles_prefix__a6Wee']/text()").get()
+            + response.xpath("//span[@class='styles_suffix__2BIZf']/text()").get(),
+            "store_description": response.xpath("//*[@class='styles_container__9nZxD customer-generated-content']/text()").get(),
+            "store_rating": response.xpath("//span[@class='typography_heading-m__T_L_X typography_appearance-default__AAY17']/text()").get(),
+        }
 
-    def parse_category(self, response: HtmlResponse):
-        news = response.xpath(
-            "//a[@class='entry-item-card entry-content ']/@href"
-        ).getall()
-        for new_url in news:
-            yield scrapy.Request(response.urljoin(new_url), callback=self.parse_new)
+        from app.database.persistence import create
+        from app.models.store import Store, StoreSQL
+        ddd = (StoreSQL,StoreSQL.store_id)
+        a = Store(**kabum_store)
+        create(value=a, data_tuple=ddd)
+        yield kabum_store
+        
 
-    def parse_new(self, response: HtmlResponse):
-        title = response.xpath("//h1/text()").get()
-        date = " ".join(
-            response.xpath("//*[@class='publish-date']/text()").get().split()
-        )
-        quotes = response.xpath(
-            "//article[@class='ck-article secondary-content entry-content']/blockquote/text()"
-        ).get()
-        if len(quotes) < 10:
-            quotes = response.xpath(
-                "//article[@class='ck-article secondary-content entry-content']/blockquote/p/text()"
-            ).get()
-        if len(quotes) < 10:
-            quotes = response.xpath(
-                "//article[@class='ck-article secondary-content entry-content']/p/text()"
-            ).get()
-        status_quotes = ""
-        url = response.url
-        yield {"title": title, "date": date, "quotes": quotes, "url": url}
+
+def run_spider_programmatically():
+    process = CrawlerProcess(get_project_settings())
+    process.crawl(KabumSpider)
+    process.start()
+
