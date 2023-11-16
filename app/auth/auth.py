@@ -1,8 +1,7 @@
 from passlib.context import CryptContext
 from datetime import datetime, timedelta
-from fastapi import HTTPException, Depends, Header
+from fastapi import HTTPException, Header
 from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 from os import getenv
 
@@ -21,7 +20,7 @@ def verify_hash(data, data_hash):
 
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = getenv("ALGORITHM")
-ACCESS_TOKEN_EXPIRE_MINUTES = getenv("ACCESS_TOKEN_EXPIRE_MINUTES")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
 
 
 def create_access_token(data: dict):
@@ -33,13 +32,12 @@ def create_access_token(data: dict):
 
 
 def decode_token(token: str = Header(...)):
-    credentials_exception = HTTPException(
-        status_code=401,
-        detail="Could not validate credentials",
-        headers={"WWW-Authenticate": "Bearer"},
-    )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
     except JWTError:
-        raise credentials_exception
+        raise HTTPException(
+            status_code=401,
+            detail="Token incorreto ou expirado",
+            headers={"WWW-Authenticate": "Bearer"},
+        )

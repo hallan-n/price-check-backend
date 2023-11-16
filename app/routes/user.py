@@ -1,61 +1,36 @@
-from app.auth.auth import create_access_token, decode_token
-from fastapi import HTTPException, Depends
-
-
-
-from fastapi import APIRouter, HTTPException
-from datetime import timedelta
-from app.models.user import User, SimpleUser
-from app.database.persistence import create, delete, read, update, read_all, verify_user
+from app.auth.auth import decode_token
+from fastapi import Depends
+from fastapi import APIRouter
+from app.models.user import User, UserSQL
+from app.database.persistence import (
+    create,
+    read_user_for_email,
+    update
+)
 
 router = APIRouter()
 
-
-@router.get("/user/{id}")
-async def get_user(id: int):
-    """Pega um usuário com base no ID"""
-    resp = read(id, "user")
-    return resp
+tuple_user = (UserSQL, UserSQL.user_id, UserSQL.email)
 
 
 @router.get("/user")
-async def get_all_user():
-    """Pega todos os usuários"""
-    resp = read_all("user")
+async def get_user(token: dict = Depends(decode_token)):
+    """Pega os dados do usuário autenticado"""
+    resp = read_user_for_email(token["sub"])
     return resp
 
 
 @router.post("/user")
 async def create_user(user: User):
     """Cria um usuário"""
-    resp = create(user, "user")
-    return resp
-
-
-@router.delete("/user/{id}")
-async def delete_user(id: int):
-    """Delete um usuário com base no ID"""
-    resp = delete(id, "user")
+    resp = create(user, tuple_user)
     return resp
 
 
 @router.put("/user")
 async def update_user(user: User, token: dict = Depends(decode_token)):
-    """Update um usuário com base no ID"""
-    resp = update(user, "user")
+    """Atualiza um usuário"""
+    resp = update(value=user, data_tuple=tuple_user,token=token["sub"])
     return resp
 
 
-@router.post("/token")
-async def get_auth(user: SimpleUser):
-    """Pega o JWT com base no login"""
-    user_auth = verify_user(user)
-    print(user_auth)
-    if not user_auth:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid user",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token = create_access_token(data={"sub": user_auth.email})
-    return {"access_token": access_token, "token_type": "bearer"}
