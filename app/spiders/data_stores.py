@@ -10,7 +10,8 @@ from random import random
 
 class StoreSpider(scrapy.Spider):
     name = "stores"
-    start_urls = ["https://br.trustpilot.com/review/magazineluiza.com.br"]
+    # "https://br.trustpilot.com/review/magazineluiza.com.br",
+    start_urls = ["https://br.trustpilot.com/review/havan.com.br"]
 
     def parse(self, response: HtmlResponse):
         pre_url = response.css(".styles_prefix__a6Wee::text").get()
@@ -43,44 +44,96 @@ class StoreSpider(scrapy.Spider):
                     link,
                     callback=self.parse_products,
                 )
+        if "havan" in response.url:
+            links = response.xpath(
+                '//ul[contains(@class, "menu__inner-list menu__inner-list")]/li/a/@href'
+            ).getall()
+            for link in links:
+                if not link == "#":
+                    yield scrapy.Request(
+                        link,
+                        callback=self.parse_products,
+                    )
 
     def parse_products(self, response: HtmlResponse):
-        links = response.xpath('//li[@class="sc-APcvf eJDyHN"]//a/@href').getall()
-        for link in links:
-            yield scrapy.Request(
-                response.urljoin(link),
-                callback=self.parse_product,
-            )
-        pagination = response.xpath('//ul[@class="sc-isRoRg fPwgEt"]//a/@href').get()
-        if pagination:
-            yield scrapy.Request(
-                response.urljoin(pagination), callback=self.parse_products
-            )
+        if "magazine" in response.url:
+            links = response.xpath('//li[@class="sc-APcvf eJDyHN"]//a/@href').getall()
+            for link in links:
+                yield scrapy.Request(
+                    response.urljoin(link),
+                    callback=self.parse_product,
+                )
+            pagination = response.xpath(
+                '//ul[@class="sc-isRoRg fPwgEt"]//a/@href'
+            ).get()
+            if pagination:
+                yield scrapy.Request(
+                    response.urljoin(pagination), callback=self.parse_products
+                )
+        if "havan" in response.url:
+            links = response.xpath(
+                '//li[contains(@class, "item product product-item")]//a/@href'
+            ).getall()
+            for link in links:
+                if not link == "#":
+                    yield scrapy.Request(
+                        link,
+                        callback=self.parse_product,
+                    )
+            pagination = response.xpath(
+                '//ul[@class="items pages-items"]//a/@href'
+            ).get()
+            if pagination:
+                yield scrapy.Request(
+                    pagination, callback=self.parse_products
+                )
 
     def parse_product(self, response: HtmlResponse):
-        product_name = response.xpath("//h1/text()").get()
-        description = response.xpath('//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/text()|//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/p/text()').get().strip()
-        category = response.xpath('(//a[@class="sc-koXPp bXTNdB"])[2]//text()').get()
-        brand = response.xpath('//td[text()="Marca"]/following-sibling::td//text()').get()
-        model = response.xpath('//td[text()="Modelo"]/following-sibling::td//text()').get()
-        price = str(response.xpath('//div[@class="sc-dcJsrY bCfntu"]//p/text()').get()).replace("\xa0", "")
-        price = price.replace("R$", "")
-        average_rating = str(response.xpath("//span[@class='sc-kpDqfm jYhqpO']//text()").get())
-        if average_rating == "None": average_rating = "0"
-        availability = response.xpath("//div[@class='sc-dhKdcB kbCiGN']//label/text()").get()
-        availability = True if availability else False
+        if "magazine" in response.url:
+            product_name = response.xpath("//h1/text()").get()
+            description = (
+                response.xpath(
+                    '//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/text()|//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/p/text()'
+                )
+                .get()
+                .strip()
+            )
+            category = response.xpath(
+                '(//a[@class="sc-koXPp bXTNdB"])[2]//text()'
+            ).get()
+            brand = response.xpath(
+                '//td[text()="Marca"]/following-sibling::td//text()'
+            ).get()
+            model = response.xpath(
+                '//td[text()="Modelo"]/following-sibling::td//text()'
+            ).get()
+            price = str(
+                response.xpath('//div[@class="sc-dcJsrY bCfntu"]//p/text()').get()
+            ).replace("\xa0", "")
+            price = price.replace("R$", "")
+            average_rating = str(
+                response.xpath("//span[@class='sc-kpDqfm jYhqpO']//text()").get()
+            )
+            if average_rating == "None":
+                average_rating = "0"
+            availability = response.xpath(
+                "//div[@class='sc-dhKdcB kbCiGN']//label/text()"
+            ).get()
+            availability = True if availability else False
 
-        yield {
-            "product_name": product_name,
-            "description": description,
-            "category": category,
-            "brand": brand,
-            "model": model,
-            "price": price,
-            "product_url": response.url,
-            "average_rating": average_rating,
-            "availability": availability,
-        }
+            yield {
+                "product_name": product_name,
+                "description": description,
+                "category": category,
+                "brand": brand,
+                "model": model,
+                "price": price,
+                "product_url": response.url,
+                "average_rating": average_rating,
+                "availability": availability,
+            }
+        if "havan" in response.url:
+            pass
 
 
 # def run_spider_programmatically():

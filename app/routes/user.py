@@ -2,11 +2,7 @@ from app.auth.auth import decode_token
 from fastapi import Depends
 from fastapi import APIRouter
 from app.models.user import User, UserSQL
-from app.database.persistence import (
-    create,
-    read_user_for_email,
-    update
-)
+from app.database.persistence import create, read_user_for_email, update
 
 router = APIRouter()
 
