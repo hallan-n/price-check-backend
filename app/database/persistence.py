@@ -10,7 +10,7 @@ import mysql.connector
 from mysql.connector.errors import DatabaseError
 from dotenv import load_dotenv
 import os
-from app.auth.auth import data_hash, verify_hash
+from app.services.auth import data_hash, verify_hash
 
 session = get_session()
 

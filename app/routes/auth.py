@@ -1,4 +1,4 @@
-from app.auth.auth import create_access_token
+from app.services.auth import create_access_token
 from fastapi import HTTPException
 from fastapi import APIRouter, HTTPException
 from app.models.user import SimpleUser

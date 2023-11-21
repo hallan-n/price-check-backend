@@ -1,4 +1,4 @@
-from app.auth.auth import decode_token
+from app.services.auth import decode_token
 from fastapi import Depends
 from fastapi import APIRouter
 from app.models.user import User, UserSQL

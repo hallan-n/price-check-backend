@@ -13,5 +13,5 @@ app.include_router(router_auth)
 # app.include_router(router_store)
 
 # from app.database.persistence import create_tables;create_tables()
-# from app.spiders.data_stores import run_spider_programmatically
-# run_spider_programmatically()
+from app.spiders.data_stores import run_spider
+run_spider()

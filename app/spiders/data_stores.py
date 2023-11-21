@@ -1,17 +1,21 @@
 import scrapy
 from scrapy.http.response.html import HtmlResponse
-from random import random
 
-# from scrapy.crawler import CrawlerProcess
-# from scrapy.utils.project import get_project_settings
-# from app.models.store import Store, StoreSQL
-# from app.database.persistence import create
+from app.services.decorators import run_once
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+
+
+from app.models.store import Store, StoreSQL
+from app.database.persistence import create, read
 
 
 class StoreSpider(scrapy.Spider):
     name = "stores"
-    # "https://br.trustpilot.com/review/magazineluiza.com.br",
-    start_urls = ["https://br.trustpilot.com/review/havan.com.br"]
+    start_urls = [
+        "https://br.trustpilot.com/review/magazineluiza.com.br",
+        "https://br.trustpilot.com/review/havan.com.br",
+    ]
 
     def parse(self, response: HtmlResponse):
         pre_url = response.css(".styles_prefix__a6Wee::text").get()
@@ -84,11 +88,10 @@ class StoreSpider(scrapy.Spider):
                 '//ul[@class="items pages-items"]//a/@href'
             ).get()
             if pagination:
-                yield scrapy.Request(
-                    pagination, callback=self.parse_products
-                )
+                yield scrapy.Request(pagination, callback=self.parse_products)
 
     def parse_product(self, response: HtmlResponse):
+        product = {}
         if "magazine" in response.url:
             product_name = response.xpath("//h1/text()").get()
             description = (
@@ -121,7 +124,7 @@ class StoreSpider(scrapy.Spider):
             ).get()
             availability = True if availability else False
 
-            yield {
+            product = {
                 "product_name": product_name,
                 "description": description,
                 "category": category,
@@ -133,10 +136,45 @@ class StoreSpider(scrapy.Spider):
                 "availability": availability,
             }
         if "havan" in response.url:
-            pass
+            product_name = response.xpath("//h1/span/text()").get()
+            description = response.xpath(
+                "//div[@class='product attribute description']//p/text()"
+            ).get()
+            category = None
+            brand = response.xpath(
+                "//td[text()='Marca']/following-sibling::td//text()"
+            ).get()
+            model = response.xpath(
+                "//div[@class='product attribute description']//p//text()[contains(., 'Modelo:')]"
+            ).get()
+            if model:
+                model = model.replace("\r\nModelo:", "").replace("\u00a0", "")
+            price = response.xpath("//span[@class='price']/text()").get()
+            price = price.replace("R$\xa0", "")
+            average_rating = None
+            availability = response.xpath(
+                "//button[@id='product-addtocart-button']//p[text()='Comprar']/text()"
+            ).get()
+            availability = True if availability else False
 
+            print(average_rating)
+            product = {
+                "product_name": product_name,
+                "description": description,
+                "category": category,
+                "brand": brand,
+                "model": model,
+                "price": price,
+                "product_url": response.url,
+                "average_rating": average_rating,
+                "availability": availability,
+            }
+        store = None
+        yield product
+         
 
-# def run_spider_programmatically():
-#     process = CrawlerProcess(get_project_settings())
-#     process.crawl(KabumSpider)
-#     process.start()
+@run_once
+def run_spider():
+    process = CrawlerProcess(get_project_settings())
+    process.crawl(StoreSpider)
+    process.start()
