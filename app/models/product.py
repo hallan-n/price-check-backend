@@ -9,29 +9,28 @@ class ProductSQL(BaseModel):
 
     product_id = Column(Integer, primary_key=True, autoincrement=True, unique=True)
     product_name = Column(String(255))
-    description = Column(String(255))
-    category = Column(String(255))
-    brand = Column(String(255))
-    model = Column(String(255))
-    price = Column(String(255))
-    product_url = Column(String(255))
-    update_date = Column(String(255))
-    average_rating = Column(String(40))
-    availability = Column(String(40))
+    description = Column(String(400), nullable=True)
+    category = Column(String(255), nullable=True)
+    brand = Column(String(255), nullable=True)
+    model = Column(String(255), nullable=True)
+    price = Column(String(255), nullable=True)
+    product_url = Column(String(255), nullable=True)
+    average_rating = Column(String(40), nullable=True)
+    availability = Column(String(40), nullable=True)
     store_id = Column(Integer, ForeignKey("stores.store_id"))
     store = relationship("StoreSQL", back_populates="products")
 
 
 class Product(BM):
     product_id: int = None
-    product_name: str
-    description: str
-    category: str
-    brand: str
-    model: str
-    price: str
-    product_url: str
-    update_date: str
-    average_rating: str
-    availability: str
+    product_name: str = None
+    description: str = None
+    category: str = None
+    brand: str = None
+    model: str = None
+    price: str = None
+    product_url: str = None
+    update_date: str = None
+    average_rating: str = None
+    availability: str = None
     store_id: int = None

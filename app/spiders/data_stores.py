@@ -7,14 +7,17 @@ from scrapy.utils.project import get_project_settings
 
 
 from app.models.store import Store, StoreSQL
-from app.database.persistence import create, read
+from app.models.product import Product, ProductSQL
+from app.database.persistence import create
 
 
 class StoreSpider(scrapy.Spider):
+    tuple_product = (ProductSQL, ProductSQL.product_id)
+    tuple_store = (StoreSQL, StoreSQL.store_id)
     name = "stores"
     start_urls = [
         "https://br.trustpilot.com/review/magazineluiza.com.br",
-        "https://br.trustpilot.com/review/havan.com.br",
+        "https://br.trustpilot.com/review/havan.com.br"
     ]
 
     def parse(self, response: HtmlResponse):
@@ -33,11 +36,13 @@ class StoreSpider(scrapy.Spider):
             "//span[@class='typography_heading-m__T_L_X typography_appearance-default__AAY17']/text()"
         ).get()
         store_dict = {
-            "store_name": store_name,
-            "store_url": store_url,
-            "store_description": store_description,
-            "store_rating": store_rating,
+            "store_name": str(store_name),
+            "store_url": str(store_url),
+            "store_description": str(store_description),
+            "store_rating": str(store_rating),
         }
+        store = Store(**store_dict)
+        create(value=store, data_tuple=self.tuple_store)
         yield scrapy.Request(store_url, callback=self.parse_category)
 
     def parse_category(self, response: HtmlResponse):
@@ -156,22 +161,21 @@ class StoreSpider(scrapy.Spider):
                 "//button[@id='product-addtocart-button']//p[text()='Comprar']/text()"
             ).get()
             availability = True if availability else False
-
-            print(average_rating)
             product = {
-                "product_name": product_name,
-                "description": description,
-                "category": category,
-                "brand": brand,
-                "model": model,
-                "price": price,
+                "product_name": str(product_name),
+                "description": str(description),
+                "category": str(category),
+                "brand": str(brand),
+                "model": str(model),
+                "price": str(price),
                 "product_url": response.url,
-                "average_rating": average_rating,
-                "availability": availability,
+                "average_rating": str(average_rating),
+                "availability": str(availability),
+                "store_id": 1
             }
-        store = None
+        product = Product(**product)
+        create(value=product, data_tuple=self.tuple_product)
         yield product
-         
 
 @run_once
 def run_spider():
