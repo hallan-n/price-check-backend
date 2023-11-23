@@ -33,12 +33,21 @@ def read_user_for_email(email: str):
         return False
     return data
 
+def read(data_tuple: tuple, id: int):
+    data = session.query(data_tuple[0]).filter(data_tuple[1] == id).first()
+    if not data:
+        return False
+    return data
 
 def create(value: BM, data_tuple: tuple):
     try:
         if data_tuple[0] == UserSQL:
             if read_user_for_email(value.email):
                 return "Email já cadastrado"
+            value.password = data_hash(value.password)
+        if data_tuple[0] == LoginSQL:
+            if read(data_tuple=data_tuple, id=value.login_id):
+                return "Login já cadastrado"
             value.password = data_hash(value.password)
         data = dict(value)
         sql_class = data_tuple[0](**data)
@@ -52,8 +61,10 @@ def create(value: BM, data_tuple: tuple):
         session.close()
 
 
-def read(data_tuple: tuple, id: int):
-    data = session.query(data_tuple[0]).filter(data_tuple[1] == id).first()
+
+
+def read_all(data_tuple: tuple):
+    data = session.query(data_tuple[0]).all()
     if not data:
         return {"message": "Not found"}
     return data

@@ -1,40 +1,16 @@
+from app.services.auth import decode_token
+from fastapi import Depends
 from fastapi import APIRouter
-from app.models.login import Login
-from app.database.persistence import create, delete, read, update, read_all
+from app.models.login import Login, LoginSQL
+from app.database.persistence import create, read_user_for_email
 
 router = APIRouter()
-
-
-@router.get("/login/{id}")
-async def get_product(id: int):
-    """Pega um login com base no ID"""
-    resp = read(id, "login")
-    return resp
-
-
-@router.get("/login")
-async def get_all_product():
-    """Pega todos os logins"""
-    resp = read_all("product")
-    return resp
-
+tuple_login = (LoginSQL, LoginSQL.login_id)
 
 @router.post("/login")
-async def create_product(login: Login):
+async def create_product(login: Login, token: dict = Depends(decode_token)):
     """Cria um login"""
-    resp = create(login, "login")
-    return resp
-
-
-@router.delete("/login/{id}")
-async def delete_product(id: int):
-    """Delete um login com base no ID"""
-    resp = delete(id, "login")
-    return resp
-
-
-@router.put("/login")
-async def update_product(login: Login):
-    """Atualiza um login"""
-    resp = update(login, "login")
+    user = read_user_for_email(token["sub"])
+    login.user_id = user.user_id
+    resp = create(login, data_tuple=tuple_login)
     return resp

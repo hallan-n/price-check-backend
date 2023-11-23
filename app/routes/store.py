@@ -1,40 +1,15 @@
+from app.services.auth import decode_token
+from fastapi import Depends
 from fastapi import APIRouter
-from app.models.store import Store
-from app.database.persistence import create, delete, read, update, read_all
+from app.models.store import StoreSQL
+from app.database.persistence import read_all
 
 router = APIRouter()
-
-
-@router.get("/store/{id}")
-async def get_store(id: int):
-    """Pega uma loja com base no ID"""
-    resp = read(id, "store")
-    return resp
+tuple_store = (StoreSQL, StoreSQL.store_id)
 
 
 @router.get("/store")
-async def get_all_store():
+async def get_store(token: dict = Depends(decode_token)):
     """Pega todas as lojas"""
-    resp = read_all("store")
-    return resp
-
-
-@router.post("/store")
-async def create_store(store: Store):
-    """Cria uma loja"""
-    resp = create(store, "store")
-    return resp
-
-
-@router.delete("/store/{id}")
-async def delete_store(id: int):
-    """Delete uma loja com base no ID"""
-    resp = delete(id, "store")
-    return resp
-
-
-@router.put("/store")
-async def update_store(store: Store):
-    """Atualiza uma loja"""
-    resp = update(store, "store")
+    resp = read_all(tuple_store)
     return resp

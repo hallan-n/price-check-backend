@@ -15,9 +15,10 @@ class StoreSpider(scrapy.Spider):
     tuple_product = (ProductSQL, ProductSQL.product_id)
     tuple_store = (StoreSQL, StoreSQL.store_id)
     name = "stores"
+
     start_urls = [
         "https://br.trustpilot.com/review/magazineluiza.com.br",
-        "https://br.trustpilot.com/review/havan.com.br"
+        "https://br.trustpilot.com/review/havan.com.br",
     ]
 
     def parse(self, response: HtmlResponse):
@@ -96,16 +97,13 @@ class StoreSpider(scrapy.Spider):
                 yield scrapy.Request(pagination, callback=self.parse_products)
 
     def parse_product(self, response: HtmlResponse):
-        product = {}
         if "magazine" in response.url:
             product_name = response.xpath("//h1/text()").get()
-            description = (
-                response.xpath(
-                    '//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/text()|//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/p/text()'
-                )
-                .get()
-                .strip()
-            )
+            description = response.xpath(
+                '//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/text()|//div[@class="sc-fqkvVR hlqElk sc-jcdlHQ cxsdMT"]/p/text()'
+            ).get()
+            if description:
+                description = description[0:100]
             category = response.xpath(
                 '(//a[@class="sc-koXPp bXTNdB"])[2]//text()'
             ).get()
@@ -130,21 +128,28 @@ class StoreSpider(scrapy.Spider):
             availability = True if availability else False
 
             product = {
-                "product_name": product_name,
-                "description": description,
-                "category": category,
-                "brand": brand,
-                "model": model,
-                "price": price,
+                "product_name": str(product_name),
+                "description": str(description),
+                "category": str(category),
+                "brand": str(brand),
+                "model": str(model),
+                "price": str(price),
                 "product_url": response.url,
-                "average_rating": average_rating,
-                "availability": availability,
+                "average_rating": str(average_rating),
+                "availability": str(availability),
+                "store_id": 1,
             }
+
+            product = Product(**product)
+            create(value=product, data_tuple=self.tuple_product)
+            yield product
         if "havan" in response.url:
             product_name = response.xpath("//h1/span/text()").get()
             description = response.xpath(
                 "//div[@class='product attribute description']//p/text()"
             ).get()
+            if description:
+                description = description[0:100]
             category = None
             brand = response.xpath(
                 "//td[text()='Marca']/following-sibling::td//text()"
@@ -171,11 +176,12 @@ class StoreSpider(scrapy.Spider):
                 "product_url": response.url,
                 "average_rating": str(average_rating),
                 "availability": str(availability),
-                "store_id": 1
+                "store_id": 2,
             }
-        product = Product(**product)
-        create(value=product, data_tuple=self.tuple_product)
-        yield product
+            product = Product(**product)
+            create(value=product, data_tuple=self.tuple_product)
+            yield product
+
 
 @run_once
 def run_spider():
