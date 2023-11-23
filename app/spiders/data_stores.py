@@ -18,7 +18,7 @@ class StoreSpider(scrapy.Spider):
 
     start_urls = [
         "https://br.trustpilot.com/review/magazineluiza.com.br",
-        "https://br.trustpilot.com/review/havan.com.br",
+        "https://br.trustpilot.com/review/havan.com.br"
     ]
 
     def parse(self, response: HtmlResponse):
@@ -126,7 +126,7 @@ class StoreSpider(scrapy.Spider):
                 "//div[@class='sc-dhKdcB kbCiGN']//label/text()"
             ).get()
             availability = True if availability else False
-
+            image_url = response.xpath("//img[@class='sc-cWSHoV jnuWYf']/@src").get()
             product = {
                 "product_name": str(product_name),
                 "description": str(description),
@@ -137,9 +137,9 @@ class StoreSpider(scrapy.Spider):
                 "product_url": response.url,
                 "average_rating": str(average_rating),
                 "availability": str(availability),
+                "image_url": str(image_url),
                 "store_id": 1,
             }
-
             product = Product(**product)
             create(value=product, data_tuple=self.tuple_product)
             yield product
@@ -166,6 +166,8 @@ class StoreSpider(scrapy.Spider):
                 "//button[@id='product-addtocart-button']//p[text()='Comprar']/text()"
             ).get()
             availability = True if availability else False
+            image_url = response.xpath("//img[@class='fotorama__img']/@src").get()
+            
             product = {
                 "product_name": str(product_name),
                 "description": str(description),
@@ -176,8 +178,10 @@ class StoreSpider(scrapy.Spider):
                 "product_url": response.url,
                 "average_rating": str(average_rating),
                 "availability": str(availability),
+                "image_url": str(image_url),
                 "store_id": 2,
             }
+
             product = Product(**product)
             create(value=product, data_tuple=self.tuple_product)
             yield product
