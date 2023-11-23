@@ -13,5 +13,7 @@ app.include_router(router_store)
 app.include_router(router_login)
 
 
-from app.database.persistence import create_tables; create_tables()
+from app.database.persistence import create_tables
+
+create_tables()
 # from app.spiders.data_stores import run_spider; run_spider()

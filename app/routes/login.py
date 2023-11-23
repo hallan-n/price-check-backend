@@ -7,6 +7,7 @@ from app.database.persistence import create, read_user_for_email
 router = APIRouter()
 tuple_login = (LoginSQL, LoginSQL.login_id)
 
+
 @router.post("/login")
 async def create_product(login: Login, token: dict = Depends(decode_token)):
     """Cria um login"""

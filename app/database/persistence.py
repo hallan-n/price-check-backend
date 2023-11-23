@@ -33,11 +33,13 @@ def read_user_for_email(email: str):
         return False
     return data
 
+
 def read(data_tuple: tuple, id: int):
     data = session.query(data_tuple[0]).filter(data_tuple[1] == id).first()
     if not data:
         return False
     return data
+
 
 def create(value: BM, data_tuple: tuple):
     try:
@@ -59,8 +61,6 @@ def create(value: BM, data_tuple: tuple):
         raise HTTPException(status_code=409, detail="Usuário invalido")
     finally:
         session.close()
-
-
 
 
 def read_all(data_tuple: tuple):
