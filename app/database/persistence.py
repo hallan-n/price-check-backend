@@ -35,6 +35,13 @@ def read_user_for_email(email: str):
     return data
 
 
+def read_login_for_id(store_id: int, user_id: int):
+    try:
+        data = session.query(LoginSQL).filter(LoginSQL.store_id == store_id, LoginSQL.user_id == user_id).first()
+        return data
+    except:
+            return False
+
 def read(data_tuple: tuple, id: int):
     data = session.query(data_tuple[0]).filter(data_tuple[1] == id).first()
     if not data:

@@ -1,8 +1,10 @@
 from selenium.webdriver import Firefox
+from pydantic import BaseModel as BM
+from app.models.login import Login
 from selenium.webdriver.common.by import By
 
 
-def run():
+def run(value: Login):
     browser = Firefox()
     USER = "hallansantos2017@gmail.com"
     PASS = "Hallan@123"
@@ -20,6 +22,8 @@ def run():
     button_logar.click()
     browser.implicitly_wait(3)
     print(login_button)
+
+    return True
 
 
 
