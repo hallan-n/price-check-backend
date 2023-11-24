@@ -36,6 +36,8 @@ class StoreSpider(scrapy.Spider):
         store_rating = response.xpath(
             "//span[@class='typography_heading-m__T_L_X typography_appearance-default__AAY17']/text()"
         ).get()
+        if not store_rating:
+            store_rating = "0"
         store_dict = {
             "store_name": str(store_name),
             "store_url": str(store_url),
@@ -166,7 +168,7 @@ class StoreSpider(scrapy.Spider):
                 "//button[@id='product-addtocart-button']//p[text()='Comprar']/text()"
             ).get()
             availability = True if availability else False
-            image_url = response.xpath("//img[@class='fotorama__img']/@src").get()
+            image_url = response.xpath("//div[@class='product media']//img/@data-src").get()
             
             product = {
                 "product_name": str(product_name),
@@ -181,7 +183,6 @@ class StoreSpider(scrapy.Spider):
                 "image_url": str(image_url),
                 "store_id": 2,
             }
-
             product = Product(**product)
             create(value=product, data_tuple=self.tuple_product)
             yield product

@@ -11,6 +11,7 @@ from mysql.connector.errors import DatabaseError
 from dotenv import load_dotenv
 import os
 from app.services.auth import data_hash, verify_hash
+from functools import lru_cache
 
 session = get_session()
 
@@ -63,6 +64,8 @@ def create(value: BM, data_tuple: tuple):
         session.close()
 
 
+
+@lru_cache(maxsize=None)
 def read_all(data_tuple: tuple):
     data = session.query(data_tuple[0]).all()
     if not data:
@@ -84,49 +87,7 @@ def update(value: BM, data_tuple: tuple, token: str = None):
         session.close()
         return {"message": "Updated successfully"}
     except:
-        return {"message": "Deu ruim"}
-
-
-# def delete(id: int, schema: str):
-#     ClassSQL = _verify_schema(schema)
-#     verify = read(id=id,schema=schema)
-#     if isinstance(verify, ClassSQL[0]):
-#         session.query(ClassSQL[0]).filter(ClassSQL[1] == id).delete()
-#         session.commit()
-#         return {"message": "Deleted successfully"}
-#     return {"message": f"{schema.capitalize()} not found"}
-
-
-# def read_all(schema: str):
-#     ClassSQL = _verify_schema(schema)
-#     data = session.query(ClassSQL[0]).all()
-#     return data
-
-
-# def _to_sqlalchemy(value: BM, schema: str):
-#     if schema == "user":
-#         value.password = data_hash(value.password)
-#     sql_data = dict(value)
-#     ClassSQL = _verify_schema(schema)[0]
-#     return ClassSQL(**sql_data)
-
-
-# def _get_id(value: [BM | BaseModel]):
-#     if isinstance(value, BM):
-#         for att in value.__annotations__:
-#             if att.endswith("id"):
-#                 return getattr(value, att)
-
-
-# def _verify_schema(schema: str):
-#     if schema == "user":
-#         return (UserSQL, UserSQL.user_id)
-#     if schema == "store":
-#         return (StoreSQL, StoreSQL.store_id)
-#     if schema == "product":
-#         return (ProductSQL, ProductSQL.product_id)
-#     if schema == "login":
-#         return (LoginSQL, LoginSQL.login_id)
+        return {"message": "Não foi possível atualizar"}
 
 
 def _create_db_mysql():

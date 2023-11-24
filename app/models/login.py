@@ -17,7 +17,8 @@ class LoginSQL(BaseModel):
 
 class Login(BM):
     login_id: int = None
-    username: str
-    password: str
+    username: str = None
+    password: str = None
     user_id: int = None
     store_id: int = None
+

@@ -17,6 +17,7 @@ class ProductSQL(BaseModel):
     product_url = Column(String(600), nullable=True)
     average_rating = Column(String(600), nullable=True)
     availability = Column(String(600), nullable=True)
+    image_url = Column(String(600), nullable=True)
     store_id = Column(Integer, ForeignKey("stores.store_id"))
     store = relationship("StoreSQL", back_populates="products")
 
@@ -32,4 +33,5 @@ class Product(BM):
     product_url: str = None
     average_rating: str = None
     availability: str = None
+    image_url: str = None
     store_id: int = None
