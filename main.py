@@ -7,7 +7,6 @@ from app.routes.login import router as router_login
 from app.routes.rpa import router as router_rpa
 from fastapi.middleware.cors import CORSMiddleware
 
-
 app = FastAPI()
 
 origins = [

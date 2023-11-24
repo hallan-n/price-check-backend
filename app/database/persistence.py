@@ -1,5 +1,6 @@
 from app.database.connection import get_session
 from app.models.base_model import BaseModel, Base
+from app.services.decorators import run_once
 from pydantic import BaseModel as BM
 from fastapi import HTTPException
 from app.models.store import StoreSQL
@@ -15,7 +16,7 @@ from functools import lru_cache
 
 session = get_session()
 
-
+@run_once
 def create_tables():
     _create_db_mysql()
     Base.metadata.create_all(session.bind)
@@ -58,7 +59,6 @@ def create(value: BM, data_tuple: tuple):
         if data_tuple[0] == LoginSQL:
             if read(data_tuple=data_tuple, id=value.login_id):
                 return "Login já cadastrado"
-            value.password = data_hash(value.password)
         data = dict(value)
         sql_class = data_tuple[0](**data)
         session.add(sql_class)
